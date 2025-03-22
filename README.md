@@ -1,5 +1,7 @@
 # Chessboard Editor with Attack Visualization
 
+<img width="832" alt="image" src="https://github.com/user-attachments/assets/65d5fb47-2fed-4bcb-ba44-baf91a6c1e69" />
+
 This Python project creates an interactive chessboard editor using **python‑chess** and **pygame**. It features:
 
 - **Free Piece Movement:** Drag and drop pieces anywhere on the board.
