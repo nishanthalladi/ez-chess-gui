@@ -80,12 +80,16 @@ def create_toolbox_layout(panel_x, panel_y, panel_width, panel_height):
     # Clear button at top
     clear_rect = pygame.Rect(panel_x + 10, panel_y + 10, btn_width, btn_height)
     # Start button below it
-    start_rect = pygame.Rect(panel_x + 10, panel_y + 10 + btn_height + 5, btn_width, btn_height)
+    start_rect = pygame.Rect(panel_x + 10, panel_y + 10 + btn_height + 10, btn_width, btn_height)
+    # Toggle attackers button below
+    attackers_btn_rect = pygame.Rect(panel_x + 10, panel_y + 10 + btn_height * 2 + 20, btn_width, btn_height)
+
     buttons["clear"] = clear_rect
     buttons["start"] = start_rect
+    buttons["attackers"] = attackers_btn_rect
 
     # Define piece grid area below the buttons:
-    grid_top = panel_y + 10 + 2 * (btn_height + 5)  # starting y for piece icons
+    grid_top = panel_y + 10 + 2 * (btn_height + 40)  # starting y for piece icons
     grid_cell_width = panel_width // 2  # two columns: white and black
     grid_cell_height = (panel_height - grid_top - 10) // len(PIECE_ORDER)  # one row per piece type
 
@@ -145,6 +149,9 @@ def main():
     panel_height = TOTAL_HEIGHT
     buttons, piece_icons = create_toolbox_layout(panel_x, panel_y, panel_width, panel_height)
 
+    # Toggle number of attackers on square
+    show_attackers = True
+
     running = True
     while running:
         for event in pygame.event.get():
@@ -167,6 +174,8 @@ def main():
                         board.clear()  # remove all pieces
                     elif clicked_button == "start":
                         board.set_fen(chess.STARTING_FEN)
+                    elif clicked_button == "attackers":
+                        show_attackers = not show_attackers
                     else:
                         # Otherwise, check if clicking on a piece icon.
                         for icon in piece_icons:
@@ -248,21 +257,22 @@ def main():
                 white_count = len(white_attackers)
                 black_count = len(black_attackers)
 
-                # Draw white attackers count (top left) if nonzero.
-                if white_count > 0:
-                    count_text = str(white_count)
-                    pos = (x + MARGIN, y + MARGIN)
-                    draw_text_with_outline(screen, count_text, number_font, pos,
-                                           (255, 255, 255), (0, 0, 0))
-                # Draw black attackers count (top right) if nonzero.
-                if black_count > 0:
-                    count_text = str(black_count)
-                    text_surface = number_font.render(count_text, True, (0, 0, 0))
-                    text_rect = text_surface.get_rect()
-                    pos = (x + SQUARE_SIZE - text_rect.width - MARGIN,
-                           y + MARGIN)
-                    draw_text_with_outline(screen, count_text, number_font, pos,
-                                           (0, 0, 0), (255, 255, 255))
+                if show_attackers:
+                    # Draw white attackers count (top left) if nonzero.
+                    if white_count > 0:
+                        count_text = str(white_count)
+                        pos = (x + MARGIN, y + MARGIN)
+                        draw_text_with_outline(screen, count_text, number_font, pos,
+                                            (255, 255, 255), (0, 0, 0))
+                    # Draw black attackers count (top right) if nonzero.
+                    if black_count > 0:
+                        count_text = str(black_count)
+                        text_surface = number_font.render(count_text, True, (0, 0, 0))
+                        text_rect = text_surface.get_rect()
+                        pos = (x + SQUARE_SIZE - text_rect.width - MARGIN,
+                            y + MARGIN)
+                        draw_text_with_outline(screen, count_text, number_font, pos,
+                                            (0, 0, 0), (255, 255, 255))
 
         # Draw pieces from board state.
         for square in chess.SQUARES:
@@ -340,10 +350,7 @@ def main():
                 color = BUTTON_COLOR
             pygame.draw.rect(screen, color, rect)
             # Draw button text centered in the rect.
-            if key == "clear":
-                text = "Clear"
-            elif key == "start":
-                text = "Start"
+            text = key
             btn_font = pygame.font.SysFont("Arial", 24, bold=True)
             text_surf = btn_font.render(text, True, BUTTON_TEXT_COLOR)
             text_rect = text_surf.get_rect(center=rect.center)
